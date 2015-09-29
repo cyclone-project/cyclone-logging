@@ -1,0 +1,41 @@
+elasticsearch:
+  image: elasticsearch
+  volumes:
+    - ./config/elasticsearch:/usr/share/elasticsearch/config
+    - ./data/elasticsearch:/usr/share/elasticsearch/data
+  expose:
+    - "9200"
+    - "9300"
+
+logstash:
+  image: logstash
+  volumes:
+    - ./config/logstash/logstash.conf:/opt/logstash/logstash.conf
+  links:
+    - elasticsearch
+  command: logstash --debug -f /opt/logstash/logstash.conf
+  expose:
+    - "9400"
+    - "9500"
+    - "9600"
+    - "9514"
+  ports:
+    - "9400:9400"
+    - "9500:9500"
+    - "9600:9600"
+    - "9514:9514"
+
+filter:
+  build: components/cyclone-logging-filter-proxy
+  links:
+    - elasticsearch
+    - logstash
+  environment:
+    - LOGGING_FILTER_HOST=0.0.0.0
+    - LOGGING_FILTER_PORT=3003
+    - ES_HOST=http://elasticsearch
+    - ES_PORT=9200
+    - ES_URL=http://"+window.location.hostname+":3003
+    - REDIRECT_PORT=80
+  ports:
+    - "3003:3003"

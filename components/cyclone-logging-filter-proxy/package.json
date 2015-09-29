@@ -1,0 +1,20 @@
+{
+  "name": "cyclone-logging-filter-proxy",
+  "version": "0.1.0",
+  "description": "Authentication and filter proxy for the cyclone logging system.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "connect-keycloak": "^0.0.16",
+    "express": "^4.13.3",
+    "express-session": "^1.11.3",
+    "http-proxy": "^1.11.2",
+    "morgan": "^1.6.1",
+    "winston": "^1.0.1",
+    "winston-logstash": "^0.2.11"
+  }
+}
