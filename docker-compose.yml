@@ -1,5 +1,5 @@
 elasticsearch:
-  image: elasticsearch
+  image: elasticsearch:1.7
   volumes:
     - ./config/elasticsearch:/usr/share/elasticsearch/config
     - ./data/elasticsearch:/usr/share/elasticsearch/data
@@ -8,7 +8,7 @@ elasticsearch:
     - "9300"
 
 logstash:
-  image: logstash
+  image: logstash:1.5
   volumes:
     - ./config/logstash/logstash.conf:/opt/logstash/logstash.conf
   links:
