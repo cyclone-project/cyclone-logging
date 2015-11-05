@@ -12,8 +12,10 @@ var nodesPattern 		= /^\/_nodes$/,
 
 module.exports.allows = function allows(req) {		
 	var reqUrl = url.parse(req.url).pathname;
-	var id = req.auth.grant.id_token.content.schacHomeOrganization;
-	var dataPattern = new RegExp(dataPatternTemplate.replace(placeholder, id));	
+	var id = req.auth.grant.id_token.content.schacHomeOrganization;	
+	if (id === 'admin')
+		return true;
 	
+	var dataPattern = new RegExp(dataPatternTemplate.replace(placeholder, id));		
 	return (nodesPattern.test(reqUrl) || dataPattern.test(reqUrl));
 }

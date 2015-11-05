@@ -21,10 +21,10 @@ kibana.prototype.getDashboardConfig = function(req) {
 	var subject = req.auth.grant.id_token.content.eduPersonPrincipalName;	
 	rlog.info("Accessing kibana dashboard", { category: 'logging', 'client-id': id, 'subject-id': subject });
 	
-	// TODO remove or debug flag
-	//return dashboardTemplate.replace(placeholderIndex, indexAll);
-	
-	return dashboardTemplate.replace( placeholderIndex, indexLimited.replace(placeholderId, id) );
+	if (id === 'admin')
+		return dashboardTemplate.replace(placeholderIndex, indexAll);
+	else
+		return dashboardTemplate.replace( placeholderIndex, indexLimited.replace(placeholderId, id) );
 };
 
 kibana.prototype.getConfig = function() {
