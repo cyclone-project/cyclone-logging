@@ -36,6 +36,6 @@ filter:
     - ES_HOST=http://elasticsearch
     - ES_PORT=9200
     - ES_URL=http://"+window.location.hostname+":3003
-    - REDIRECT_PORT=80
+    - REDIRECT_PORT=3003
   ports:
     - "3003:3003"
