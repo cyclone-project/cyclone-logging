@@ -16,3 +16,10 @@ __Kibana__ is configured by editing kibana_config_template.js and kibana_dashboa
 __Prerequisites:__ Create an openid-connect client in the cyclone-federation-provider and export the client adapter configuration in the Keycloak JSON format to keycloak.json. Put this file into the cyclone-logging-filter-proxy directory. 
 
 Then deploy with [docker-compose](https://docs.docker.com/compose/), i.e. `docker-compose up`. 
+
+#CYCLONE Filter Proxy 
+This involves Kibana. It has two tasks:
+- Accept login via the Federation Provider(Keycloak)
+- Depending on the claims of the user in the JWT that Kibana receives from the Federation Provider, it shows only logs assigned to the organization of the user. 
+
+The filter image defined in docker-compose.yml includes both the filter and the Kibana image.
