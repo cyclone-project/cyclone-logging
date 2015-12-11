@@ -32,10 +32,10 @@ filter:
     - logstash
   environment:
     - LOGGING_FILTER_HOST=0.0.0.0
-    - LOGGING_FILTER_PORT=3003
+    - LOGGING_FILTER_PORT=8080
     - ES_HOST=http://elasticsearch
     - ES_PORT=9200
-    - ES_URL=http://"+window.location.hostname+":3003
-    - REDIRECT_PORT=3003
+    - ES_URL=http://"+window.location.hostname+":8080
+    - REDIRECT_PORT=8080
   ports:
-    - "3003:3003"
+    - "8080:8080"

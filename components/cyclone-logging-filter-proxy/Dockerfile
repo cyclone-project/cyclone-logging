@@ -7,7 +7,7 @@ RUN wget https://download.elasticsearch.org/kibana/kibana/kibana-3.1.2.tar.gz &&
 
 ENTRYPOINT ["node", "app.js"]
 
-EXPOSE 3003
+EXPOSE 8080
 
 ADD . /opt/cyclone-logging-filter-proxy
 WORKDIR /opt/cyclone-logging-filter-proxy
