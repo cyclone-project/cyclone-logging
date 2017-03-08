@@ -1,43 +1,36 @@
-elasticsearch:
-  image: elasticsearch:1.7
-  volumes:
-    - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-    - ./es-logging.yml:/usr/share/elasticsearch/config/logging.yml
-    - ./es-template.json:/usr/share/elasticsearch/config/template/es_template.json
-    - ./es-data:/usr/share/elasticsearch/data
-  expose:
-    - "9200"
-    - "9300"
+version: '2'
 
-logstash:
-  image: logstash:1.5
-  volumes:
-    - ./logstash.conf:/opt/logstash/logstash.conf
-  links:
-    - elasticsearch
-  command: logstash --debug -f /opt/logstash/logstash.conf
-  expose:
-    - "9400"
-    - "9500"
-    - "9600"
-    - "9514"
-  ports:
-    - "9400:9400"
-    - "9500:9500"
-    - "9600:9600"
-    - "9514:9514"
+services:
 
-filter:
-  build: ./filter-proxy
-  links:
-    - elasticsearch
-    - logstash
-  environment:
-    - LOGGING_FILTER_HOST=0.0.0.0
-    - LOGGING_FILTER_PORT=8080
-    - ES_HOST=http://elasticsearch
-    - ES_PORT=9200
-    - ES_URL=http://"+window.location.hostname+":8080
-    - REDIRECT_PORT=8080
-  ports:
-    - "8080:8080"
+    elasticsearch:
+      image: elasticsearch:1.7
+      volumes:
+        - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+        - ./es-logging.yml:/usr/share/elasticsearch/config/logging.yml
+        - ./es-template.json:/usr/share/elasticsearch/config/template/es_template.json
+        - ./es-data:/usr/share/elasticsearch/data
+      expose:
+        - "9200"
+        - "9300"
+
+    logstash:
+      image: logstash:1.5
+      volumes:
+        - ./logstash.conf:/opt/logstash/logstash.conf
+      command: logstash --debug -f /opt/logstash/logstash.conf
+      expose:
+        - "9400"
+        - "9500"
+        - "9600"
+        - "9514"
+      ports:
+        - "9400:9400"
+        - "9500:9500"
+        - "9600:9600"
+        - "9514:9514"
+
+    filter:
+      build: ./filter-proxy
+      ports:
+        - "8080:8080"
+
