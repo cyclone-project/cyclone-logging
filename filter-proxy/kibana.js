@@ -17,10 +17,10 @@ var kibana = function(es_url) {
 };
 
 kibana.prototype.getDashboardConfig = function(req) {
-	var id = req.auth.grant.id_token.content.schacHomeOrganization;
-	var subject = req.auth.grant.id_token.content.eduPersonPrincipalName;	
+	var id = req.kauth.grant.id_token.content.schacHomeOrganization;
+	var subject = req.kauth.grant.id_token.content.eduPersonPrincipalName;
 	rlog.info("Accessing kibana dashboard", { category: 'logging', 'client-id': id, 'subject-id': subject });
-	
+
 	if (id === 'admin')
 		return dashboardTemplate.replace(placeholderIndex, indexAll);
 	else

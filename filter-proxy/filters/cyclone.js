@@ -12,7 +12,7 @@ var nodesPattern 		= /^\/_nodes$/,
 
 module.exports.allows = function allows(req) {		
 	var reqUrl = url.parse(req.url).pathname;
-	var id = req.auth.grant.id_token.content.schacHomeOrganization;	
+	var id = req.kauth.grant.id_token.content.schacHomeOrganization;	
 	if (id === 'admin')
 		return true;
 	

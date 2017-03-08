@@ -3,13 +3,13 @@
  */
 
 var config = {
-	host 	:	process.env.LOGGING_FILTER_HOST || 'localhost',
-	port 	:	process.env.LOGGING_FILTER_PORT || 4004,
-	es_host :	process.env.ES_HOST 			|| 'http://localhost',
+	host 	:	process.env.LOGGING_FILTER_HOST || '0.0.0.0',
+	port 	:	process.env.LOGGING_FILTER_PORT || 8080,
+	es_host :	process.env.ES_HOST 			|| 'http://elasticsearch',
 	es_port	:	process.env.ES_PORT 			|| 9200,
-	es_url	:	process.env.ES_URL 				|| 'http://"+window.location.hostname+":4004',
+	es_url	:	process.env.ES_URL 				|| 'http://"+window.location.hostname+":8080',
 	k_path	:	process.env.KIBANA_PATH			|| __dirname + '/kibana',
-	r_port	:	process.env.REDIRECT_PORT		|| 4004
+	r_port	:	process.env.REDIRECT_PORT		|| 8080
 };
 
 var log 	  = require('./logging').log,
@@ -18,7 +18,7 @@ var log 	  = require('./logging').log,
 
 var express = require('express'),
 	proxy = require('http-proxy'),
-	Keycloak = require('connect-keycloak');
+	Keycloak = require('keycloak-connect');
 
 var	Session = require('express-session'),
 	sessionStore = new Session.MemoryStore();
@@ -58,7 +58,7 @@ app.get('/kibana/app/dashboards/*', function(req, res, next) {
 app.get('/kibana/config.js', function(req, res, next) {
 	return res.status(200)
 			  .type('application/javascript')
-			  .send( kibana.getConfig() ); 
+			  .send( kibana.getConfig() );
 });
 
 // Provide all other Kibana files
@@ -73,12 +73,12 @@ app.get('/status', function(req, res, next) {
 app.use('/', function(req ,res, next) {
 	if (filter.allows(req))
 		return filterProxy.web(req, res);
-	
+
 	return res.status(403).end();
 });
 
 /* === Begin ==================================================================== */
 var server = app.listen(config.port, config.host, function() {
 	log.info('CYCLONE logging filter proxy listens on '+config.host+':'+config.port+', proxies to '+config.es_host+':'+config.es_port+'.');
-	log.info('Kibana expects elasticsearch at ' + config.es_url);	
+	log.info('Kibana expects elasticsearch at ' + config.es_url);
 });
