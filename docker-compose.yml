@@ -1,8 +1,10 @@
 elasticsearch:
   image: elasticsearch:1.7
   volumes:
-    - ./config/elasticsearch:/usr/share/elasticsearch/config
-    - ./data/elasticsearch:/usr/share/elasticsearch/data
+    - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    - ./es-logging.yml:/usr/share/elasticsearch/config/logging.yml
+    - ./es-template.json:/usr/share/elasticsearch/config/template/es_template.json
+    - ./es-data:/usr/share/elasticsearch/data
   expose:
     - "9200"
     - "9300"
@@ -10,7 +12,7 @@ elasticsearch:
 logstash:
   image: logstash:1.5
   volumes:
-    - ./config/logstash/logstash.conf:/opt/logstash/logstash.conf
+    - ./logstash.conf:/opt/logstash/logstash.conf
   links:
     - elasticsearch
   command: logstash --debug -f /opt/logstash/logstash.conf
@@ -26,7 +28,7 @@ logstash:
     - "9514:9514"
 
 filter:
-  build: components/cyclone-logging-filter-proxy
+  build: ./filter-proxy
   links:
     - elasticsearch
     - logstash
