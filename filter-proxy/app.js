@@ -2,83 +2,73 @@
  * A filter proxy for the CYCLONE logging system.
  */
 
-var config = {
-	host 	:	process.env.LOGGING_FILTER_HOST || '0.0.0.0',
-	port 	:	process.env.LOGGING_FILTER_PORT || 8080,
-	es_host :	process.env.ES_HOST 			|| 'http://elasticsearch',
-	es_port	:	process.env.ES_PORT 			|| 9200,
-	es_url	:	process.env.ES_URL 				|| 'http://"+window.location.hostname+":8080',
-	k_path	:	process.env.KIBANA_PATH			|| __dirname + '/kibana',
-	r_port	:	process.env.REDIRECT_PORT		|| 8080
-};
+const	proxy = require('http-proxy');
+const express = require('express');
+const session = require('express-session');
+const	Keycloak = require('keycloak-connect');
 
-var log 	  = require('./logging').log,
-	morgan	  = require('morgan'),
-	logstream = { write: function(message, encoding) { log.info(message); }};
+const Kibana = require('./kibana');
+const config = require('./config');
+const filter = require('./filters/cyclone');
+const logger = require('./log');
 
-var express = require('express'),
-	proxy = require('http-proxy'),
-	Keycloak = require('keycloak-connect');
+let app = express();
+let sessionStore = session.MemoryStore();
+let log = logger.log;
 
-var	Session = require('express-session'),
-	sessionStore = new Session.MemoryStore();
-
-var Kibana = require('./kibana'),
-	filter = require('./filters/cyclone');
-
-/* === Setup ==================================================================== */
-var app = express();
 app.disable('x-powered-by');
-app.set('port', config.r_port);
-app.use( morgan('dev', { stream: logstream }) );
-app.use(Session({										// TODO switch to proper session store (e.g. redis)
-	secret: 'secret',
+app.set('port', config.port);
+app.use(logger.middleware);
+app.use(session({
+	secret: config.sessionSecret,
 	resave: false,
 	saveUninitialized: true,
-	store: sessionStore
+	store: sessionStore,
 }));
 
-// Register keycloak middleware
-var keycloak = new Keycloak({ store: sessionStore });
+// register authentication middleware for all routes
+let keycloak = new Keycloak({store: sessionStore}, config.keycloak);
 app.use(keycloak.middleware({}));
 app.use(keycloak.protect());
 
-var kibana 		= new Kibana(config.es_url),
-	filterProxy = proxy.createProxy( { xfwd: false, target: config.es_host+':'+config.es_port } );
+let kibana = new Kibana(config.es_front);
+let filterProxy = proxy.createProxy({
+	xfwd: false,
+	target: config.es_back,
+});
 
-/* === Paths ==================================================================== */
 // Provide Kibana dashboard configuration dynamically
 app.get('/kibana/app/dashboards/*', function(req, res, next) {
-	return res.status(200)
-			  .type('application/json')
-			  .send( kibana.getDashboardConfig(req) );
+	let dashboard = kibana.getDashboardConfig(req);
+	return res.status(200).json(dashboard);
 });
 
 // Provide Kibana configuration
 app.get('/kibana/config.js', function(req, res, next) {
-	return res.status(200)
-			  .type('application/javascript')
-			  .send( kibana.getConfig() );
+	let kibanaConfig = kibana.getConfig();
+	return res.status(200).json(kibanaConfig);
 });
 
 // Provide all other Kibana files
-app.use('/kibana/', express.static(config.k_path));
+app.use('/kibana/', express.static(__dirname + '/kibana'));
 
 // A simple health/status check
 app.get('/status', function(req, res, next) {
-	return res.json({ 'status': 'running' });
+	return res.status(200).json({'status': 'running'});
 });
 
 // Filter and proxy all other requests to elasticsearch
-app.use('/', function(req ,res, next) {
-	if (filter.allows(req))
+app.use('/', function(req, res, next) {
+	if (filter.allows(req)) {
 		return filterProxy.web(req, res);
-
-	return res.status(403).end();
+	} else {
+		return res.status(403).end();
+	}
 });
 
-/* === Begin ==================================================================== */
-var server = app.listen(config.port, config.host, function() {
-	log.info('CYCLONE logging filter proxy listens on '+config.host+':'+config.port+', proxies to '+config.es_host+':'+config.es_port+'.');
-	log.info('Kibana expects elasticsearch at ' + config.es_url);
+app.listen(config.port, config.host, function() {
+	log.info('CYCLONE logging filter proxy listens %s:%s and proxies to %s',
+		config.host, config.port, config.es_back);
+	log.info('Kibana expects Elasticsearch at %s', config.es_front);
 });
+
