@@ -38,6 +38,17 @@ let filterProxy = proxy.createProxy({
 	target: config.es_back,
 });
 
+// check for missing organization
+app.use(function(req, res, next) {
+	let organization = req.kauth.grant.id_token.content.schacHomeOrganization;
+	if (!organization || organization.length === 0) {
+		return res.status(400).send('Sorry, we couldn\'t determine your organization.\
+			Please contact your administrator.');
+	} else {
+		next();
+	}
+});
+
 // Provide Kibana dashboard configuration dynamically
 app.get('/kibana/app/dashboards/*', function(req, res, next) {
 	let subject = req.kauth.grant.id_token.content.eduPersonPrincipalName;
