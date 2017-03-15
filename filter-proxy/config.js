@@ -26,7 +26,7 @@ module.exports = {
 	/**
 	 * Logstash Host (for logging to logstash)
 	 */
-	'logstashHost': 'http://logstash',
+	'logstashHost': 'logstash',
 
 	/**
 	 * Logstash Port (for logging to logstash)
