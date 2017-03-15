@@ -4,12 +4,13 @@
   "description": "Authentication and filter proxy for the cyclone logging system.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "test": "NODE_ENV=testing nyc tape tests/*.js"
   },
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "keycloak-connect": "^2.5.4",
+    "keycloak-connect": "^2.5.5",
     "express": "^4.15.2",
     "express-session": "^1.15.1",
     "http-proxy": "^1.16.2",
@@ -19,6 +20,8 @@
   },
   "devDependencies": {
     "eslint": "^3.17.1",
-    "eslint-config-google": "^0.7.1"
+    "eslint-config-google": "^0.7.1",
+    "nyc": "^10.1.2",
+    "tape": "^4.6.3"
   }
 }
