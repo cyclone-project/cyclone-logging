@@ -2,6 +2,7 @@
  * A filter proxy for the CYCLONE logging system.
  */
 
+const path = require('path');
 const	proxy = require('http-proxy');
 const express = require('express');
 const session = require('express-session');
@@ -13,7 +14,7 @@ const filter = require('./filters/cyclone');
 const logger = require('./log');
 
 let app = express();
-let sessionStore = session.MemoryStore();
+let sessionStore = new session.MemoryStore();
 let log = logger.log;
 
 app.disable('x-powered-by');
@@ -50,7 +51,7 @@ app.get('/kibana/config.js', function(req, res, next) {
 });
 
 // Provide all other Kibana files
-app.use('/kibana/', express.static(__dirname + '/kibana'));
+app.use('/kibana', express.static(path.join(__dirname, 'kibana')));
 
 // A simple health/status check
 app.get('/status', function(req, res, next) {

@@ -21,7 +21,6 @@ if (!process.env.NODE_ENV && process.env.NODE_ENV !== 'testing') {
 		port: config.logstashPort,
 		max_connect_retries: 100,
 		timeout_connect_retries: 2000,
-		colorize: false,
 	}));
 }
 
