@@ -40,14 +40,15 @@ let filterProxy = proxy.createProxy({
 
 // Provide Kibana dashboard configuration dynamically
 app.get('/kibana/app/dashboards/*', function(req, res, next) {
-	let dashboard = kibana.getDashboardConfig(req);
+	let subject = req.kauth.grant.id_token.content.eduPersonPrincipalName;
+	let organization = req.kauth.grant.id_token.content.schacHomeOrganization;
+	let dashboard = kibana.createUserDashboard(subject, organization);
 	return res.status(200).json(dashboard);
 });
 
 // Provide Kibana configuration
 app.get('/kibana/config.js', function(req, res, next) {
-	let kibanaConfig = kibana.getConfig();
-	return res.status(200).json(kibanaConfig);
+	return res.status(200).send(kibana.config);
 });
 
 // Provide all other Kibana files
