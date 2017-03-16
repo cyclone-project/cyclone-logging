@@ -54,6 +54,11 @@ app.get('/kibana/app/dashboards/*', function(req, res, next) {
 	let subject = req.kauth.grant.id_token.content.eduPersonPrincipalName;
 	let organization = req.kauth.grant.id_token.content.schacHomeOrganization;
 	let dashboard = kibana.createUserDashboard(subject, organization);
+	log.info('Accessing Kibana Dashboard', {
+		'category': 'logging',
+		'client-id': organization,
+		'subject-id': subject,
+	});
 	return res.status(200).json(dashboard);
 });
 
@@ -77,6 +82,10 @@ app.use('/', function(req, res, next) {
 	} else {
 		return res.status(403).end();
 	}
+});
+
+app.use(function(req, res, next) {
+	res.status(404).end();
 });
 
 app.listen(config.port, config.host, function() {

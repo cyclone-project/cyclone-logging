@@ -1,4 +1,3 @@
-const log = require('./log').log;
 
 const allIndex = {
 	'default': '_all',
@@ -40,12 +39,6 @@ class Kibana {
 	}
 
 	createUserDashboard(subject, organization) {
-		log.info('Accessing Kibana Dashboard', {
-			'category': 'logging',
-			'client-id': organization,
-			'subject-id': subject,
-		});
-
 		let userIndex;
 		if (organization === 'admin') {
 			userIndex = allIndex;
