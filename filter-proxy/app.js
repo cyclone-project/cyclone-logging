@@ -19,6 +19,10 @@ let log = logger.log;
 
 app.disable('x-powered-by');
 app.set('port', config.port);
+if (config.proxy_ip) {
+	app.set('trust proxy', config.proxy_ip);
+}
+
 app.use(logger.middleware);
 app.use(session({
 	secret: config.sessionSecret,
