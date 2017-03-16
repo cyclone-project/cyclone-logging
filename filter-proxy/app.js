@@ -75,9 +75,14 @@ app.get('/status', function(req, res, next) {
 	return res.status(200).json({'status': 'running'});
 });
 
-// Filter and proxy all other requests to elasticsearch
-app.use('/', function(req, res, next) {
-	if (filter.allows(req)) {
+app.all('/_nodes', function(req, res, next) {
+	return filterProxy.web(req, res);
+});
+
+// Filter query requests to elasticsearch
+app.all('/:queryIndex/((_aliases|_search|_mapping))', function(req, res, next) {
+	let organization = req.kauth.grant.id_token.content.schacHomeOrganization;
+	if (filter.allows(req.params.queryIndex, organization)) {
 		return filterProxy.web(req, res);
 	} else {
 		return res.status(403).end();

@@ -1,21 +1,14 @@
 
-var url = require('url'),
-	logging = require('../logging');
+module.exports = {
+	allows(queryIndex, organization) {
+		if (!queryIndex) {
+			return false;
+		}
+		if (organization === 'admin') {
+			return true;
+		}
+		let indexExp = new RegExp(organization+'-\\d{4}\\.\\d{2}\\.\\d{2}$');
+		return indexExp.test(queryIndex);
+	},
+};
 
-var log  = logging.log,
-	rlog = logging.rlog;
-	
-var placeholder = '#cycloneId#';
-
-var nodesPattern 		= /^\/_nodes$/, 
-	dataPatternTemplate = '^/(' + placeholder + '-[\\d\\.,]+)+/(_aliases|_search|_mapping)$';
-
-module.exports.allows = function allows(req) {		
-	var reqUrl = url.parse(req.url).pathname;
-	var id = req.kauth.grant.id_token.content.schacHomeOrganization;	
-	if (id === 'admin')
-		return true;
-	
-	var dataPattern = new RegExp(dataPatternTemplate.replace(placeholder, id));		
-	return (nodesPattern.test(reqUrl) || dataPattern.test(reqUrl));
-}
