@@ -1,0 +1,29 @@
+sudo: required
+dist: trusty
+group: edge
+
+language: node_js
+
+services:
+  - docker
+
+branches:
+  only:
+    -master
+
+cache:
+  directories:
+    - filter-proxy/node_modules
+
+before_install:
+  - docker -v
+  - docker-compose -v
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+
+jobs:
+  include:
+    - stage: test
+      script: cd filter-proxy && npm install && npm test
+    - stage: deploy
+      script: docker-compose build && docker-compose push
+
