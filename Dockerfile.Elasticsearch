@@ -1,0 +1,5 @@
+FROM elasticsearch:1.7
+
+COPY elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
+COPY es-logging.yml /usr/share/elasticsearch/config/logging.yml
+COPY es-template.json /usr/share/elasticsearch/config/templates/es_template.json
