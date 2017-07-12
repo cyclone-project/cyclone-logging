@@ -67,8 +67,8 @@ const proxy_ip = process.env.PROXY_IP;
  */
 const keycloak = {
 	'realm': process.env.FPROXY_KCREALM || 'master',
-	'auth-server-url': process.env.FPROXY_KCURL || 'https://federation.cyclone-project.eu/auth',
-	'ssl-required': process.env.FPROXY_SSLREQ || 'external',
+	'auth-server-url': process.env.FPROXY_KCURL || 'http://localhost/auth',
+	'ssl-required': process.env.FPROXY_SSLREQ || 'none',
 	'resource': process.env.FPROXY_KCRESOURCE || 'test',
 	'public-client': (process.env.FPROXY_KCISPUB === undefined) ? true : process.env.KEYCLOAK_ISPUB,
 };
