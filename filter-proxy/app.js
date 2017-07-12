@@ -3,10 +3,10 @@
  */
 
 const path = require('path');
-const	proxy = require('http-proxy');
+const proxy = require('http-proxy');
 const express = require('express');
 const session = require('express-session');
-const	Keycloak = require('keycloak-connect');
+const Keycloak = require('keycloak-connect');
 
 const Kibana = require('./kibana');
 const config = require('./config');
@@ -79,14 +79,18 @@ app.get('/status', function(req, res, next) {
 	return res.status(200).json({'status': 'running'});
 });
 
-app.all('/_nodes', function(req, res, next) {
+const esUrlLength = config.es_url.length;
+
+app.all(config.es_url + '/_nodes', function(req, res, next) {
+	req.url = req.originalUrl.substring(esUrlLength);
 	return filterProxy.web(req, res);
 });
 
 // Filter query requests to elasticsearch
-app.all('/:queryIndex/((_aliases|_search|_mapping))', function(req, res, next) {
+app.all(config.es_url + '/:queryIndex/((_aliases|_search|_mapping))', function(req, res, next) {
 	let organization = req.kauth.grant.id_token.content.schacHomeOrganization;
 	if (filter.allows(req.params.queryIndex, organization)) {
+		req.url = req.originalUrl.substring(esUrlLength);
 		return filterProxy.web(req, res);
 	} else {
 		return res.status(403).end();
@@ -102,4 +106,3 @@ app.listen(config.port, config.host, function() {
 		config.host, config.port, config.es_back);
 	log.info('Kibana expects Elasticsearch at %s', config.es_front);
 });
-
