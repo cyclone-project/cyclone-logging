@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "NODE_ENV=testing nyc tape tests/*.js"
+    "test": "NODE_ENV=testing tape tests/*.js",
+    "coverage": "NODE_ENV=testing nyc tape tests/*.js"
   },
   "author": "",
   "license": "Apache-2.0",
