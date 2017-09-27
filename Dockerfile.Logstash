@@ -1,0 +1,5 @@
+FROM logstash:1.5
+
+COPY logstash-entrypoint.sh /logstash-entrypoint.sh
+
+ENTRYPOINT ["/logstash-entrypoint.sh"]

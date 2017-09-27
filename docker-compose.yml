@@ -18,8 +18,11 @@ services:
       - "9300"
 
   logstash:
-    image: logstash:1.5
-    command: logstash -f /run/secrets/logstash.conf
+    build:
+      context: .
+      dockerfile: Dockerfile.Logstash
+    image: cycloneproject/logging-logstash
+    command: logstash --debug -f /run/secrets/logstash.conf
     secrets:
       - source: logstashconf
         target: logstash.conf
