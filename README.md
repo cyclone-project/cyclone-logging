@@ -1,6 +1,8 @@
 Cyclone Logging
 ===============
 
+[![Build Status](https://travis-ci.org/cyclone-project/cyclone-logging.svg?branch=master)](https://travis-ci.org/cyclone-project/cyclone-logging)
+
 This repository contains the cyclone filter proxy and base configuration for deploying the cyclone logging system. It provides an endpoint to consolidate and view the logs from the various components in the cyclone ecosystem and filtering access to them. It uses the ELK stack ([Elasticsearch](https://github.com/elastic/elasticsearch), [Logstash](https://github.com/elastic/logstash), [Kibana3](https://github.com/elastic/kibana/tree/kibana3)) for log consolidation, filtering and viewing, and [docker and docker-compose](https://www.docker.com) for all deployments. We provide pre-built docker images tagged with cycloneproject/imageName on [docker hub](https://hub.docker.com).
 
 ## Structure
@@ -34,7 +36,7 @@ Elasticsearch data is (by default) persisted in `es-data`.For configuring elasti
  - `es-logging.yml` for logging format and destination.
  - `es-template.json` for initial formatting, parsing and indexing of received logs.
 
-Logstash can be configured by editing `logstash.conf`. It contains inputs, filters and outputs. For more information, please see logstash documentation.
+Logstash can be configured by editing `logstash.conf`. It contains inputs, filters and outputs. By default, it expects elasticsearch to be reachable at the host `elasticsarch`. This can be changed in `logstash.conf` and the new host should be provided to the container through the `ES_HOST` environment variable.
 
-Kibana configuration is provided dynamically by the filter-proxy (see `filter-proxy/kibana.js`). The filter-proxy configuration is in `filter-proxy/config.js` and can be configured using environment variables as well.
+Kibana configuration is provided dynamically by the filter-proxy (see `filter-proxy/kibana.js`). The filter-proxy configuration is in `filter-proxy/config.js`. It can be configured using the environment variables specified there as well.
 
